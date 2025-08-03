@@ -22,10 +22,22 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 const lawyerRegisterSchema = z.object({
-  name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres." }),
-  email: z.string().email({ message: "E-mail inválido." }),
-  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres." }),
-  oab: z.string().min(3, { message: "Número da OAB inválido." }), // Basic validation, can be improved
+  name: z
+    .string()
+    .min(3, { message: "Nome deve ter no mínimo 3 caracteres." })
+    .max(50, { message: "Nome deve ter no máximo 50 caracteres." }),
+  email: z
+    .string()
+    .email({ message: "E-mail inválido." })
+    .max(50, { message: "E-mail deve ter no máximo 50 caracteres." }),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter no mínimo 6 caracteres." })
+    .max(50, { message: "Senha deve ter no máximo 50 caracteres." }),
+  oab: z
+    .string()
+    .min(3, { message: "Número da OAB inválido." })
+    .max(50, { message: "Número da OAB deve ter no máximo 50 caracteres." }), // Basic validation, can be improved
 });
 
 type LawyerRegisterFormValues = z.infer<typeof lawyerRegisterSchema>;
@@ -93,7 +105,7 @@ export function LawyerRegisterFormComponent() {
             <FormItem>
               <FormLabel>Nome Completo</FormLabel>
               <FormControl>
-                <Input placeholder="Seu nome completo" {...field} />
+                <Input placeholder="Seu nome completo" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -106,7 +118,7 @@ export function LawyerRegisterFormComponent() {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input placeholder="seuemail@exemplo.com" {...field} />
+                <Input placeholder="seuemail@exemplo.com" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,7 +131,7 @@ export function LawyerRegisterFormComponent() {
             <FormItem>
               <FormLabel>Número da OAB</FormLabel>
               <FormControl>
-                <Input placeholder="Ex: SP123456" {...field} />
+                <Input placeholder="Ex: SP123456" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -133,7 +145,12 @@ export function LawyerRegisterFormComponent() {
               <FormLabel>Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} placeholder="Crie uma senha forte" {...field} />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Crie uma senha forte"
+                    maxLength={50}
+                    {...field}
+                  />
                   <Button
                     type="button"
                     variant="ghost"

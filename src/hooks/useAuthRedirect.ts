@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 
 type Role = 'USUARIO' | 'ADVOGADO';
@@ -16,6 +16,7 @@ export const useAuthRedirect = (options: UseAuthRedirectOptions) => {
   const { requiredAuth, allowedRoles, redirectPath = '/login' } = options;
   const { isAuthenticated, user, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (isLoading) return; // Don't redirect until auth state is loaded
@@ -31,11 +32,24 @@ export const useAuthRedirect = (options: UseAuthRedirectOptions) => {
     }
 
     // Optional: Redirect authenticated users away from public pages like login/register
-    if (!requiredAuth && isAuthenticated && (router.pathname === '/login' || router.pathname === '/register/user' || router.pathname === '/register/lawyer')) {
-        router.replace('/dashboard');
+    if (!requiredAuth &&
+        isAuthenticated &&
+        (pathname === '/login' ||
+          pathname === '/register/user' ||
+          pathname === '/register/lawyer')) {
+      router.replace('/dashboard');
     }
 
-  }, [isAuthenticated, user, isLoading, requiredAuth, allowedRoles, redirectPath, router]);
+  }, [
+    isAuthenticated,
+    user,
+    isLoading,
+    requiredAuth,
+    allowedRoles,
+    redirectPath,
+    router,
+    pathname,
+  ]);
 
   return { isLoading, isAuthenticated, user };
 };

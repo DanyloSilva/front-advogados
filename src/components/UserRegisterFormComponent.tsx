@@ -22,9 +22,18 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 const userRegisterSchema = z.object({
-  name: z.string().min(3, { message: "Nome deve ter no mínimo 3 caracteres." }),
-  email: z.string().email({ message: "E-mail inválido." }),
-  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres." }),
+  name: z
+    .string()
+    .min(3, { message: "Nome deve ter no mínimo 3 caracteres." })
+    .max(50, { message: "Nome deve ter no máximo 50 caracteres." }),
+  email: z
+    .string()
+    .email({ message: "E-mail inválido." })
+    .max(50, { message: "E-mail deve ter no máximo 50 caracteres." }),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter no mínimo 6 caracteres." })
+    .max(50, { message: "Senha deve ter no máximo 50 caracteres." }),
 });
 
 type UserRegisterFormValues = z.infer<typeof userRegisterSchema>;
@@ -90,7 +99,7 @@ export function UserRegisterFormComponent() {
             <FormItem>
               <FormLabel>Nome Completo</FormLabel>
               <FormControl>
-                <Input placeholder="Seu nome completo" {...field} />
+                <Input placeholder="Seu nome completo" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -103,7 +112,7 @@ export function UserRegisterFormComponent() {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input placeholder="seuemail@exemplo.com" {...field} />
+                <Input placeholder="seuemail@exemplo.com" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -117,7 +126,12 @@ export function UserRegisterFormComponent() {
               <FormLabel>Senha</FormLabel>
               <FormControl>
                  <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} placeholder="Crie uma senha forte" {...field} />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Crie uma senha forte"
+                    maxLength={50}
+                    {...field}
+                  />
                   <Button
                     type="button"
                     variant="ghost"

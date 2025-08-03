@@ -3,6 +3,9 @@ import type React from 'react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FileText, CalendarDays, UserCircle, ArrowRight } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import ProposalFormComponent from './ProposalFormComponent';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Case {
   id: number;
@@ -18,9 +21,11 @@ export interface Case {
 interface CaseCardProps {
   caseData: Case;
   onViewDetails?: (caseId: number) => void;
+  allowProposal?: boolean;
 }
 
-const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
+const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails, allowProposal }) => {
+  const { user } = useAuth();
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Data não informada';
     try {
@@ -62,18 +67,34 @@ const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails }) => {
           </div>
         )}
       </CardContent>
-      <CardFooter className="p-4 border-t border-border bg-muted/30">
-        {onViewDetails ? (
-          <Button 
-            variant="outline" 
+      <CardFooter className="p-4 border-t border-border bg-muted/30 flex flex-col space-y-2">
+        {onViewDetails && (
+          <Button
+            variant="outline"
             className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground focus:ring-primary group transition-all duration-200"
             onClick={() => onViewDetails(caseData.id)}
             aria-label={`Ver detalhes do caso ${caseData.title}`}
           >
             Ver Detalhes <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-transform"/>
           </Button>
-        ) : (
-           <p className="text-xs text-muted-foreground italic w-full text-center">Mais ações em breve</p>
+        )}
+        {allowProposal && user?.role === 'ADVOGADO' && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" variant="default">
+                Enviar Proposta
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Enviar Proposta</DialogTitle>
+              </DialogHeader>
+              <ProposalFormComponent caseId={caseData.id} />
+            </DialogContent>
+          </Dialog>
+        )}
+        {!onViewDetails && !(allowProposal && user?.role === 'ADVOGADO') && (
+          <p className="text-xs text-muted-foreground italic w-full text-center">Mais ações em breve</p>
         )}
       </CardFooter>
     </Card>

@@ -22,8 +22,14 @@ import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "E-mail inválido." }),
-  password: z.string().min(6, { message: "Senha deve ter no mínimo 6 caracteres." }),
+  email: z
+    .string()
+    .email({ message: "E-mail inválido." })
+    .max(50, { message: "E-mail deve ter no máximo 50 caracteres." }),
+  password: z
+    .string()
+    .min(6, { message: "Senha deve ter no mínimo 6 caracteres." })
+    .max(50, { message: "Senha deve ter no máximo 50 caracteres." }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -149,7 +155,7 @@ export function LoginFormComponent() {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input placeholder="seuemail@exemplo.com" {...field} />
+                <Input placeholder="seuemail@exemplo.com" maxLength={50} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -163,7 +169,12 @@ export function LoginFormComponent() {
               <FormLabel>Senha</FormLabel>
               <FormControl>
                 <div className="relative">
-                  <Input type={showPassword ? "text" : "password"} placeholder="Sua senha" {...field} />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Sua senha"
+                    maxLength={50}
+                    {...field}
+                  />
                   <Button
                     type="button"
                     variant="ghost"

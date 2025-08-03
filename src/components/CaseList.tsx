@@ -131,6 +131,7 @@ const CaseList: React.FC<CaseListProps> = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-11 text-sm h-11"
             aria-label="Buscar casos"
+            maxLength={50}
           />
         </div>
         {searchTerm && (
@@ -152,7 +153,12 @@ const CaseList: React.FC<CaseListProps> = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
           {filteredCases.map((caseItem) => (
-            <CaseCard key={caseItem.id} caseData={caseItem} onViewDetails={handleViewDetails} />
+            <CaseCard
+              key={caseItem.id}
+              caseData={caseItem}
+              onViewDetails={handleViewDetails}
+              allowProposal
+            />
           ))}
         </div>
       )}

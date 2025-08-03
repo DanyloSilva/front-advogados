@@ -66,6 +66,7 @@ const Navbar = () => {
                   <FileText className="inline-block mr-1.5 h-4 w-4" />Submeter Caso
                 </Link>
               )}
+              <Link href="/causas/historico" className={`${navItemBaseClasses} ${pathname === '/causas/historico' ? navItemActiveClasses : navItemIdleClasses}`}>Histórico</Link>
               {user.role === 'ADVOGADO' && (
                 <Link href="/cases" className={`${navItemBaseClasses} ${pathname === '/cases' ? navItemActiveClasses : navItemIdleClasses}`}>
                   <Briefcase className="inline-block mr-1.5 h-4 w-4" />Ver Casos
