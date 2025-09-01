@@ -6,6 +6,7 @@ import { FileText, CalendarDays, UserCircle, ArrowRight } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import ProposalFormComponent from './ProposalFormComponent';
 import { useAuth } from '@/contexts/AuthContext';
+import ChatButtonDialog from './ChatButtonDialog';
 
 export interface Case {
   id: number;
@@ -79,19 +80,22 @@ const CaseCard: React.FC<CaseCardProps> = ({ caseData, onViewDetails, allowPropo
           </Button>
         )}
         {allowProposal && user?.role === 'ADVOGADO' && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" variant="default">
-                Enviar Proposta
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Enviar Proposta</DialogTitle>
-              </DialogHeader>
-              <ProposalFormComponent caseId={caseData.id} />
-            </DialogContent>
-          </Dialog>
+          <div className="grid grid-cols-2 gap-2 w-full">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" variant="default">
+                  Enviar Proposta
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Enviar Proposta</DialogTitle>
+                </DialogHeader>
+                <ProposalFormComponent caseId={caseData.id} />
+              </DialogContent>
+            </Dialog>
+            <ChatButtonDialog roomId={`case-${caseData.id}`} title={`Chat do Caso #${caseData.id}`} buttonText="Chat" />
+          </div>
         )}
         {!onViewDetails && !(allowProposal && user?.role === 'ADVOGADO') && (
           <p className="text-xs text-muted-foreground italic w-full text-center">Mais ações em breve</p>

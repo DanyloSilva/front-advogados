@@ -7,6 +7,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { isProposalPaid, payProposal } from "@/lib/mockApi";
+import PaymentCheckout from "@/components/PaymentCheckout";
+import ChatButtonDialog from "@/components/ChatButtonDialog";
 
 interface HistoryCase {
   id: number;
@@ -21,6 +24,7 @@ interface Proposal {
   mensagem: string;
   valorSugerido?: number;
   advogado?: { id: number; nome?: string | null } | null;
+  advogadoNome?: string | null;
 }
 
 const CaseHistoryList: React.FC = () => {
@@ -32,6 +36,9 @@ const CaseHistoryList: React.FC = () => {
   const [proposalCaseId, setProposalCaseId] = useState<number | null>(null);
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [loadingProposals, setLoadingProposals] = useState(false);
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [checkoutAmount, setCheckoutAmount] = useState<number>(0);
+  const [checkoutProposalId, setCheckoutProposalId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -84,6 +91,7 @@ const CaseHistoryList: React.FC = () => {
         mensagem: item.mensagem,
         valorSugerido: item.valorSugerido,
         advogado: item.advogado,
+        advogadoNome: item.advogadoNome,
       }));
       setProposals(processed);
     } catch (err) {
@@ -152,10 +160,18 @@ const CaseHistoryList: React.FC = () => {
                             <ul className="space-y-4 max-h-60 overflow-y-auto">
                               {proposals.map((p) => (
                                 <li key={p.id} className="border-b pb-2">
-                                  <p className="font-medium">{p.advogado?.nome || `Advogado ${p.id}`}</p>
+                                  <p className="font-medium">{p.advogado?.nome || p.advogadoNome || `Advogado ${p.id}`}</p>
                                   <p className="text-sm mt-1">- <b>{p.mensagem}</b></p>
                                   {typeof p.valorSugerido === "number" && (
-                                    <p className="text-sm mt-1">Valor da proposta: R$ {p.valorSugerido.toFixed(2)}</p>
+                                    <div className="text-sm mt-1 flex items-center gap-2">
+                                      <span>Valor da proposta: R$ {p.valorSugerido.toFixed(2)}</span>
+                                      {!isProposalPaid(p.id) ? (
+                                        <Button size="sm" onClick={()=>{ setCheckoutProposalId(p.id); setCheckoutAmount(p.valorSugerido!); setCheckoutOpen(true); }}>Aceitar e Pagar</Button>
+                                      ) : (
+                                        <span className="text-green-600">Pago</span>
+                                      )}
+                                      <ChatButtonDialog size="sm" roomId={`proposal-${p.id}`} title={`Chat da Proposta #${p.id}`} buttonText="Chat" />
+                                    </div>
                                   )}
                                 </li>
                               ))}
@@ -172,6 +188,17 @@ const CaseHistoryList: React.FC = () => {
           ))}
         </tbody>
       </table>
+      <PaymentCheckout
+        open={checkoutOpen}
+        onOpenChange={setCheckoutOpen}
+        amount={checkoutAmount}
+        onSuccess={async ()=>{
+          if (checkoutProposalId != null) {
+            await payProposal(checkoutProposalId);
+            toast({ title: 'Pagamento confirmado (mock)' });
+          }
+        }}
+      />
     </div>
   );
 };
