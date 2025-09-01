@@ -13,6 +13,7 @@ interface HistoryCase {
   title: string;
   status: string;
   createdAt?: string;
+  quantidadePropostas?: number;
 }
 
 interface Proposal {
@@ -51,6 +52,7 @@ const CaseHistoryList: React.FC = () => {
           title: item.titulo || "Sem título",
           status: item.status || "",
           createdAt: item.dataCriacao || item.createdAt,
+          quantidadePropostas: item.quantidadePropostas ?? 0,
         }));
         setCases(processed);
       } catch (err) {
@@ -129,36 +131,41 @@ const CaseHistoryList: React.FC = () => {
               <td className="py-2 px-1">{c.status}</td>
               {user?.role === "USUARIO" && (
                 <td className="py-2 px-1">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button size="sm" variant="outline" onClick={() => openProposals(c.id)}>
-                        Ver Propostas
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Propostas Recebidas</DialogTitle>
-                      </DialogHeader>
-                      {loadingProposals ? (
-                        <div className="flex justify-center py-4">
-                          <Loader2 className="h-6 w-6 animate-spin" />
-                        </div>
-                      ) : (
-                        <ul className="space-y-4 max-h-60 overflow-y-auto">
-                          {proposals.map((p) => (
-                            <li key={p.id} className="border-b pb-2">
-                              <p className="font-medium">{p.advogado?.nome || `Advogado ${p.id}`}</p>
-                              <p className="text-sm mt-1">- <b>{p.mensagem}</b></p>
-                              {p.valorSugerido !== undefined && (
-                                <p className="text-sm mt-1">Valor da proposta: R$ {p.valorSugerido.toFixed(2)}</p>
-                              )}
-                            </li>
-                          ))}
-                          {proposals.length === 0 && <p>Nenhuma proposta enviada.</p>}
-                        </ul>
-                      )}
-                    </DialogContent>
-                  </Dialog>
+                  <div className="flex items-center gap-2">
+                    <span>{c.quantidadePropostas ?? 0}</span>
+                    {(c.quantidadePropostas ?? 0) > 0 && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button size="sm" variant="outline" onClick={() => openProposals(c.id)}>
+                            Ver Propostas
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Propostas Recebidas</DialogTitle>
+                          </DialogHeader>
+                          {loadingProposals ? (
+                            <div className="flex justify-center py-4">
+                              <Loader2 className="h-6 w-6 animate-spin" />
+                            </div>
+                          ) : (
+                            <ul className="space-y-4 max-h-60 overflow-y-auto">
+                              {proposals.map((p) => (
+                                <li key={p.id} className="border-b pb-2">
+                                  <p className="font-medium">{p.advogado?.nome || `Advogado ${p.id}`}</p>
+                                  <p className="text-sm mt-1">- <b>{p.mensagem}</b></p>
+                                  {typeof p.valorSugerido === "number" && (
+                                    <p className="text-sm mt-1">Valor da proposta: R$ {p.valorSugerido.toFixed(2)}</p>
+                                  )}
+                                </li>
+                              ))}
+                              {proposals.length === 0 && <p>Nenhuma proposta enviada.</p>}
+                            </ul>
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                  </div>
                 </td>
               )}
             </tr>
